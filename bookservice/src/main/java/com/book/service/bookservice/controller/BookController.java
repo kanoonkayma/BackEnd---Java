@@ -1,38 +1,30 @@
 package com.book.service.bookservice.controller;
 import com.book.service.bookservice.model.Book;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import com.book.service.bookservice.service.BookService;
 
-import java.util.ArrayList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 @RestController //indica que ele responde a solicitações HTTP e automaticamente serializa os objetos de retorno para JSON
-@RequestMapping("/api/books") //mapeia os endpoints dentro desta classe para o caminho /api/books.
+@RequestMapping("/books") //mapeia os endpoints dentro desta classe para o caminho /books.
 public class BookController {
     
-    private final List<Book> books = new ArrayList<>();
-    private AtomicLong counter = new AtomicLong();
-
+    @Autowired
+    private BookService bookService; //controller precisa conversar com a service
+    
     //métodos do controlador
 
-    @GetMapping("/{id}") //essa anotação tem referencia HTTP get
-    //PathVariable: mapear uma variável na URL (como {id}) para um parâmetro de método Java (postman).
-    public ResponseEntity<Book> findBookById(@PathVariable Long id) {
-        for (Book book : books) {
-            if (book.getId().equals(id)) {
-                return ResponseEntity.ok(book);
-            }
-        }
-        return ResponseEntity.notFound().build();
+    @GetMapping //essa anotação tem referencia HTTP get
+    public List<Book> getAllBooks(){
+        return bookService.findAllBooks();
     }
 
     @PostMapping //essa anotação tem referencia HTTP post
-    public ResponseEntity<Book> addBook(@RequestBody Book book) {
-        book.setId(counter.incrementAndGet());
-        books.add(book);
-        return ResponseEntity.status(HttpStatus.CREATED).body(book);
+    public Book addBook(@RequestBody Book book) {
+        
+        return bookService.addBook(book);
     }
 
 
